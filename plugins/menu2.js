@@ -1,76 +1,57 @@
-import config from '../config.cjs';
 import fs from 'fs';
 import path from 'path';
+import moment from 'moment-timezone';
+import config from '../config.cjs';
 
-const ping = async (m, Matrix) => {
-  const prefix = config.PREFIX;
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
-
-  if (cmd === "menu2") {
+const menu = async (Matrix, mek, pref) => {
     try {
-      const start = new Date().getTime();
+        const pushname = mek.pushName || 'User';
+        const date = moment().tz('Africa/Nairobi').format('DD/MM/YYYY');
+        const time = moment().tz('Africa/Nairobi').format('HH:mm:ss');
+        
+        // Njia ya kwenda kwenye folder la commands
+        // Badilisha 'commands' iwe jina la folder lako la commands
+        const commandsPath = path.join(process.cwd(), 'commands'); 
+        let menuSections = "";
 
-      // 1. Reaction Emoji Logic
-      const reactionEmojis = ['⚡', '🚀', '💎', '🎯', '🔥'];
-      const reactionEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
-      await m.React(reactionEmoji);
-
-      // 2. Count Commands (Reads all .js files in your plugins folder)
-      // Note: Change 'plugins' to 'commands' if that is your folder name
-      const commandsDir = path.join(process.cwd(), 'plugins');
-      let totalCommands = 0;
-      if (fs.existsSync(commandsDir)) {
-          const files = fs.readdirSync(commandsDir);
-          totalCommands = files.filter(file => file.endsWith('.js')).length;
-      }
-
-      const end = new Date().getTime();
-      const responseTime = (end - start) / 1000;
-
-      // 3. Media & Content
-      const imageUrl = 'https://telegra.ph/file/dc3a328616ffc9c2b9f5f.jpg';
-      const statusText = `*TIMNASA-XMD SPEED TEST* 🛡️\n\n` +
-                         `*🚀 Latency:* ${responseTime.toFixed(2)}ms\n` +
-                         `*📂 Commands:* ${totalCommands} Loaded\n` +
-                         `*🔗 GitHub:* https://github.com/timnasax/TIMNASA-XMD\n\n` +
-                         `_Systems Operational: No issues detected._`;
-
-      // 4. Send Image with Professional Context Info
-      await Matrix.sendMessage(m.from, {
-        image: { url: imageUrl },
-        caption: statusText,
-        contextInfo: {
-          mentionedJid: [m.sender],
-          forwardingScore: 999,
-          isForwarded: true,
-          externalAdReply: {
-            title: "TIMNASA-XMD ACTIVE",
-            body: "The Most Powerful WhatsApp Bot",
-            thumbnailUrl: imageUrl,
-            sourceUrl: "https://whatsapp.com/channel/0029Vb6uo9yJ3juwi9GYgS47",
-            mediaType: 1,
-            renderLargerThumbnail: true
-          }
+        if (fs.existsSync(commandsPath)) {
+            const files = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+            
+            // Tunatengeneza list ya commands kwa kuondoa '.js' kwenye jina la file
+            const commandList = files.map(file => `  ○ ${pref}${file.replace('.js', '')}`).join('\n');
+            menuSections = `\n*📜 AVAILABLE COMMANDS*\n${commandList}`;
+        } else {
+            menuSections = "\n⚠️ Folder la commands halijapatikana.";
         }
-      }, { quoted: m });
 
-      // 5. Send Audio (Wimbo) from Buddy/nothing.mp3
-      const audioPath = path.join(process.cwd(), 'Buddy', 'nothing.mp3');
+        let menuText = `
+╭──────────━⊷ ⁠⁠⁠⁠
+║   *TIMNASA-XMD*
+╰──────────━⊷
+╭──────────━⊷
+║ 👤 *User:* ${pushname}
+║ 🛠️ *Prefix:* ${pref}
+║ 📅 *Date:* ${date}
+║ ⌚ *Time:* ${time}
+║ 🚀 *Mode:* ${config.MODE}
+╰──────────━⊷
+${menuSections}
 
-      if (fs.existsSync(audioPath)) {
-        await Matrix.sendMessage(m.from, {
-          audio: fs.readFileSync(audioPath),
-          mimetype: 'audio/mpeg',
-          ptt: false // Sends as a music file (wimbo), not a voice note
-        }, { quoted: m });
-      }
+*🛡️ SYSTEM STATUS*
+○ Anti-Delete: ${config.ANTI_DELETE ? '✅' : '❌'}
+○ Auto Status: ${config.AUTO_VIEW_STATUS ? '✅' : '❌'}
 
-    } catch (error) {
-      console.error("Error in Ping Command:", error);
-      // Fail-safe reply
-      m.reply("⚠️ An error occurred, but TIMNASA-XMD is still online!");
+> Powered by Timnasa Tech`;
+
+        await Matrix.sendMessage(mek.key.remoteJid, {
+            image: { url: "https://files.catbox.moe/jmyv02.jpg" },
+            caption: menuText
+        }, { quoted: mek });
+
+    } catch (e) {
+        console.error(e);
+        await Matrix.sendMessage(mek.key.remoteJid, { text: "Error loading commands dynamicly." });
     }
-  }
 };
 
-export default ping;
+export default menu;
