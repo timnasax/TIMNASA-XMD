@@ -6,7 +6,7 @@ const ping = async (m, Matrix) => {
   const prefix = config.PREFIX;
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
 
-  if (cmd === "ping") {
+  if (cmd === "menu2") {
     try {
       const start = new Date().getTime();
 
