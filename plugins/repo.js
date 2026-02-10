@@ -6,7 +6,7 @@ const repo = async (m, gss) => {
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(" ")[0].toLowerCase() : "";
 
   if (["repo", "sc", "script", "info"].includes(cmd)) {
-    const githubRepoURL = "https://github.com/carl24tech/Buddy-XTR";
+    const githubRepoURL = "https://github.com/timnasax/TIMNASA_TMD1";
 
     try {
       // Extract username and repo name from the URL
@@ -37,14 +37,14 @@ const repo = async (m, gss) => {
       const repoData = response.data;
 
       // Format the repository information
-      const formattedInfo = `*BOT NAME:* ${repoData.name}\n\n*OWNER NAME:* ${repoData.owner.login}\n\n*STARS:* ${repoData.stargazers_count}\n\n*FORKS:* ${repoData.forks_count}\n\n*LANGUAGE:* ${repoData.language || "Not specified"}\n\n*CREATED:* ${new Date(repoData.created_at).toLocaleDateString()}\n\n*LAST UPDATED:* ${new Date(repoData.updated_at).toLocaleDateString()}\n\n*GITHUB LINK:* ${repoData.html_url}\n\n*DESCRIPTION:* ${repoData.description || "No description"}\n\n*Don't Forget To Star and Fork Repository*\n\n> *© XTR Developers 🖤*`;
+      const formattedInfo = `*BOT NAME:* ${repoData.name}\n\n*OWNER NAME:* ${repoData.owner.login}\n\n*STARS:* ${repoData.stargazers_count}\n\n*FORKS:* ${repoData.forks_count}\n\n*LANGUAGE:* ${repoData.language || "Not specified"}\n\n*CREATED:* ${new Date(repoData.created_at).toLocaleDateString()}\n\n*LAST UPDATED:* ${new Date(repoData.updated_at).toLocaleDateString()}\n\n*GITHUB LINK:* ${repoData.html_url}\n\n*DESCRIPTION:* ${repoData.description || "No description"}\n\n*Don't Forget To Star and Fork Repository*\n\n> *© Timnasa-Tech Developers 🖤*`;
 
       // Send image with repo info
       await gss.sendMessage(
         m.from,
         {
           image: { 
-            url: "https://files.catbox.moe/qi19ii.jpg" 
+            url: "https://files.catbox.moe/jmyv02.jpg" 
           },
           caption: formattedInfo,
           contextInfo: {

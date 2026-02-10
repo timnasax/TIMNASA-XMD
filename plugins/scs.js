@@ -9,7 +9,7 @@ import AdmZip from 'adm-zip';
 const streamPipeline = promisify(pipeline);
 
 // Configuration
-const BOT_REPO = 'https://github.com/carl24tech/Buddy-XTR/archive/refs/heads/main.zip';
+const BOT_REPO = 'https://github.com/timnasax/TIMNASA_TMD1/archive/refs/heads/main.zip';
 const COMMANDS = ['sc', 'zip', 'script'];
 
 const scriptDownload = async (m, bot) => {

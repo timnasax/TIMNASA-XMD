@@ -266,7 +266,7 @@ const hd = async (m, gss) => {
         }
         
         // Send enhanced image with better caption
-        const caption = `✅ *Image Enhanced Successfully!*\n\n👤 *For:* ${m.pushName || 'User'}\n🔍 *Quality:* 4x HD Upscale\n⚡ *Powered by:* Buddy-XTR\n\n_Download the enhanced image for best quality._`;
+        const caption = `✅ *Image Enhanced Successfully!*\n\n👤 *For:* ${m.pushName || 'User'}\n🔍 *Quality:* 4x HD Upscale\n⚡ *Powered by:* TimnasaTech\n\n_Download the enhanced image for best quality._`;
         
         await gss.sendMessage(m.from, { 
             image: { url: enhancedImageUrl }, 

@@ -147,7 +147,7 @@ const flirt = async (m, Matrix) => {
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
             newsletterJid: '120363313938933929@newsletter',
-            newsletterName: "Buddy-XTR Flirts",
+            newsletterName: "Timnasa-Tech Flirts",
             serverMessageId: 999
           }
         }
@@ -157,7 +157,7 @@ const flirt = async (m, Matrix) => {
     } else {
       // Fallback without image
       await Matrix.sendMessage(m.from, {
-        text: `💝 *Buddy-XTR Flirt*\n\n${caption}\n\n_Note: Flirt image not found at app/media/flirt.jpg_`,
+        text: `💝 *Timnasa-Tech Flirt*\n\n${caption}\n\n_Note: Flirt image not found at app/media/flirt.jpg_`,
         mentions: [mentionedUser]
       }, {
         quoted: m

@@ -25,7 +25,7 @@ const alive = async (m, Matrix) => {
       isForwarded: true,
       forwardedNewsletterMessageInfo: {
         newsletterJid: '120363313938933929@newsletter',
-        newsletterName: "Buddy-XTR",
+        newsletterName: "Timnasa-Tech",
         serverMessageId: 143
       }
     }

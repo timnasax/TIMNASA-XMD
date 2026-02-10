@@ -37,7 +37,7 @@ const paircode = async (m, Matrix) => {
       text: '⏳ *Requesting pair code...*'
     }, { quoted: m });
     
-    const response = await axios.post('https://for-buddy.onrender.com/', requestData, {
+    const response = await axios.post('https://session-timnasax.onrender.com/', requestData, {
       headers: {
         'Content-Type': 'application/json'
       },
@@ -51,7 +51,7 @@ const paircode = async (m, Matrix) => {
       // Create message with buttons
       await Matrix.sendMessage(m.from, {
         text: `✅ *Pair Code Generated Successfully!*\n\n📱 *Number:* 254${number}\n🔢 *Pair Code:* \`${pairCode}\`\n\n*Expires in:* 5 minutes\n*Note:* Use this code in WhatsApp pairing process`,
-        footer: 'Buddy-XTR Pair Code Service',
+        footer: 'TimnasaTech Pair Code Service',
         buttons: [
           {
             buttonId: `${prefix}paircode ${number}`,

@@ -82,7 +82,7 @@ const quiz = async (m, Matrix) => {
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
             newsletterJid: '120363313938933929@newsletter',
-            newsletterName: "Buddy-XTR Quiz",
+            newsletterName: "TimnasaTech Quiz",
             serverMessageId: 888
           }
         }

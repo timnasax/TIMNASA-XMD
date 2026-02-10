@@ -208,7 +208,7 @@ const menu = async (m, Matrix) => {
 ┃◈┃• githubstalk
 ┃◈└───────────┈⊷
 ╰──────────────┈⊷
-> *XTR Softwares*`;
+> *Timnasa Softwares*`;
 
     // Check if MENU_IMAGE exists in config and is not empty
     let menuImage;
@@ -236,7 +236,7 @@ const menu = async (m, Matrix) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterJid: '120363313938933929@newsletter',
-          newsletterName: "XTR Developers",
+          newsletterName: "TimnasaTech Developers",
           serverMessageId: 143
         }
       }

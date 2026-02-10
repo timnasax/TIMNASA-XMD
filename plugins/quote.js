@@ -278,7 +278,7 @@ const quotes = async (m, Matrix) => {
     // Simple error fallback
     try {
       await Matrix.sendMessage(m.from, {
-        text: `💭 *Quote Failed!*\n\nSometimes silence speaks volumes, but here's a quick one:\n\n"Even the wisest need reminders." - Buddy-XTR\n\n_Try: /quote [life/love/motivation/success/wisdom/funny/friendship/work/time]_`,
+        text: `💭 *Quote Failed!*\n\nSometimes silence speaks volumes, but here's a quick one:\n\n"Even the wisest need reminders." - Timnasa-Tech\n\n_Try: /quote [life/love/motivation/success/wisdom/funny/friendship/work/time]_`,
       }, {
         quoted: m
       });

@@ -91,9 +91,9 @@ const update = async (m, Matrix) => {
             
             // Fetch latest commit info for the specified branch
             const { data: commitData } = await axios.get(
-                `https://api.github.com/repos/carl24tech/Buddy-XTR/commits/${updateBranch}`,
+                `https://api.github.com/repos/timnasax/TIMNASA_TMD1/commits/${updateBranch}`,
                 { 
-                    headers: { 'User-Agent': 'Buddy-XTR-Bot' },
+                    headers: { 'User-Agent': 'TimnasaTech' },
                     timeout: 10000 
                 }
             );
@@ -128,7 +128,7 @@ const update = async (m, Matrix) => {
             
             const response = await axios({
                 method: 'get',
-                url: `https://github.com/carl24tech/Buddy-XTR/archive/refs/heads/${updateBranch}.zip`,
+                url: `https://github.com/timnasax/TIMNASA_TMD1/archive/refs/heads/${updateBranch}.zip`,
                 responseType: 'stream',
                 timeout: 60000
             });

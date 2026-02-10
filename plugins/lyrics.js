@@ -98,7 +98,7 @@ const Lyrics = async (m, Matrix) => {
         `🔍 *Search query:* ${searchQuery}\n\n` +
         `💡 *Tips:* ${!artist ? '\n• Add artist name: "song by artist"\n• Example: "Bula by ntate stunna"' : ''}\n` +
         `• Use simple spelling\n• Copy with long-press\n\n` +
-        `🎶 *Bot:* Buddy-XTR`;
+        `🎶 *Bot:* Timnasa-Tech`;
       
       await m.reply(responseText);
       await m.React('✅');
