@@ -12,71 +12,84 @@ const menu = async (m, Matrix) => {
     
     if (!['menu', 'help', 'list'].includes(cmd)) return;
 
-    // --- SYSTEM INFO ---
+    // --- MFUMO WA MUDA ---
     const uptime = process.uptime();
     const day = Math.floor(uptime / (24 * 3600));
     const hours = Math.floor((uptime % (24 * 3600)) / 3600);
     const minutes = Math.floor((uptime % 3600) / 60);
     const time = moment().tz("Africa/Nairobi").format("HH:mm:ss");
 
-    // --- AUTOMATIC CATEGORIZATION ---
-    const commandsPath = path.join(process.cwd(), 'commands');
+    // --- KUSOMA PLUGINS DYNAMICALLY ---
+    const pluginsPath = path.join(process.cwd(), 'plugins'); // Inasoma folder la PLUGINS
     let categories = {
       'DOWNLOAD': [],
       'GROUP': [],
       'OWNER': [],
       'TOOLS': [],
-      'OTHERS': []
+      'AI': [],
+      'SEARCH': [],
+      'STALK': [],
+      'MAIN': []
     };
 
-    if (fs.existsSync(commandsPath)) {
-      const files = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    if (fs.existsSync(pluginsPath)) {
+      const files = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
       
       files.forEach(file => {
         const name = file.replace('.js', '');
-        // Logic ya kupanga (unaweza kuongeza maneno hapa)
-        if (['ytmp3', 'ytmp4', 'play', 'song', 'video', 'fb', 'tiktok', 'insta', 'apk'].some(v => name.includes(v))) {
+        
+        // --- LOGIC YA KUPANGA KWENYE KURASA ---
+        if (['ytmp3', 'ytmp4', 'play', 'song', 'video', 'fb', 'tiktok', 'insta', 'apk', 'gitclone', 'gdrive', 'mediafire'].some(v => name.includes(v))) {
           categories['DOWNLOAD'].push(name);
-        } else if (['add', 'kick', 'promote', 'demote', 'hidetag', 'tagall', 'antilink', 'group'].some(v => name.includes(v))) {
+        } else if (['add', 'kick', 'promote', 'demote', 'hidetag', 'tagall', 'antilink', 'group', 'welcome', 'setname', 'setdesc'].some(v => name.includes(v))) {
           categories['GROUP'].push(name);
-        } else if (['setpp', 'block', 'unblock', 'restart', 'mode', 'join', 'leave'].some(v => name.includes(v))) {
+        } else if (['setpp', 'block', 'unblock', 'join', 'leave', 'restart', 'mode', 'anticall', 'autotyping', 'autoread'].some(v => name.includes(v))) {
           categories['OWNER'].push(name);
-        } else if (['calc', 'ai', 'gpt', 'runtime', 'ping', 'trt'].some(v => name.includes(v))) {
+        } else if (['ai', 'gpt', 'dalle', 'remini', 'gemini', 'bug', 'report'].some(v => name.includes(v))) {
+          categories['AI'].push(name);
+        } else if (['calc', 'tempmail', 'checkmail', 'trt', 'tts'].some(v => name.includes(v))) {
           categories['TOOLS'].push(name);
+        } else if (['yts', 'imdb', 'google', 'gimage', 'pinterest', 'lyrics', 'ytsearch'].some(v => name.includes(v))) {
+          categories['SEARCH'].push(name);
+        } else if (['truecaller', 'instastalk', 'githubstalk'].some(v => name.includes(v))) {
+          categories['STALK'].push(name);
+        } else if (['ping', 'alive', 'owner', 'infobot', 'runtime'].some(v => name.includes(v))) {
+          categories['MAIN'].push(name);
         } else {
-          categories['OTHERS'].push(name);
+          categories['MAIN'].push(name); // Default kundi
         }
       });
     }
 
-    // --- KUJENGA MUUNDO WA UKURASA (PAGE VIEW) ---
+    // --- UJENZI WA DASHBOARD ---
     let menuText = `
 ╭━━━〔 *${config.BOT_NAME || 'TIMNASA-XMD'}* 〕━━━┈⊷
 ┃★╭──────────────
-┃★│ 👤 User: *${m.pushName}*
-┃★│ ⏳ Uptime: *${day}d ${hours}h ${minutes}m*
-┃★│ ⌚ Time: *${time}*
-┃★│ 🛠️ Prefix: [ ${prefix} ]
+┃★│ 👤 *User:* ${m.pushName}
+┃★│ ⏳ *Uptime:* ${day}d ${hours}h ${minutes}m
+┃★│ ⌚ *Time:* ${time}
+┃★│ 🛠️ *Prefix:* [ ${prefix} ]
+┃★│ 📚 *Plugins:* ${fs.readdirSync(pluginsPath).length} files
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷
 
-> Hello🌹 *${m.pushName}*! Chagua kategoria ya amri hapa chini:
+> Hello🌹 *${m.pushName}*! Hii ndiyo list ya commands zote zilizosomwa kutoka kwenye mfumo wa plugins:
 `;
 
-    // Kutengeneza list ya kurasa/categories
-    for (let category in categories) {
+    // Kupanga kila kurasa (Page section)
+    Object.keys(categories).forEach(category => {
       if (categories[category].length > 0) {
         menuText += `\n╭━━〔 *${category} MENU* 〕━━┈⊷\n`;
         menuText += `┃◈╭─────────────·๏\n`;
-        categories[category].forEach(c => {
+        categories[category].sort().forEach(c => {
           menuText += `┃◈┃• ${prefix}${c}\n`;
         });
         menuText += `┃◈└───────────┈⊷\n`;
         menuText += `╰──────────────┈⊷\n`;
       }
-    }
+    });
 
-    menuText += `\n> *Timnasa Softwares 2026*`;
+    menuText += `\n> *Timnasa Softwares © 2026*`;
 
     // --- HANDLING IMAGE ---
     let menuImage;
@@ -89,7 +102,7 @@ const menu = async (m, Matrix) => {
       menuImage = fs.readFileSync('./Carltech/mymenu.jpg'); 
     }
 
-    // --- TUMA MENU ---
+    // --- SEND MESSAGE ---
     await Matrix.sendMessage(m.from, {
       image: menuImage,
       caption: menuText,
@@ -98,8 +111,8 @@ const menu = async (m, Matrix) => {
         forwardingScore: 999,
         isForwarded: true,
         externalAdReply: {
-            title: "TIMNASA-TMD COMMANDS PAGE",
-            body: "Powered by Timoth",
+            title: "TIMNASA-TMD DYNAMIC MENU",
+            body: "Reading from plugins folder...",
             thumbnail: menuImage,
             sourceUrl: "https://whatsapp.com/channel/0029Vb6uo9yJ3juwi9GYgS47",
             mediaType: 1,
@@ -108,7 +121,7 @@ const menu = async (m, Matrix) => {
       }
     }, { quoted: m });
 
-    // --- TUMA SAUTI ---
+    // --- VOICE NOTE (AUDIO) ---
     const audioPath = './Buddy/nothing.mp3';
     if (fs.existsSync(audioPath)) {
       await Matrix.sendMessage(m.from, {
@@ -120,6 +133,7 @@ const menu = async (m, Matrix) => {
 
   } catch (error) {
     console.error('Menu Error:', error);
+    Matrix.sendMessage(m.from, { text: "Error loading plugins: " + error.message });
   }
 };
 
