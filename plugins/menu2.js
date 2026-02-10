@@ -11,8 +11,8 @@ const menu = async (Matrix, mek, pref) => {
         
         // Njia ya kwenda kwenye folder la commands
         // Badilisha 'commands' iwe jina la folder lako la commands
-        const commandsPath = path.join(process.cwd(), 'commands'); 
-        let menuSections = "";
+        const commandsPath = path.join(process.cwd(), 'plugns'); 
+        let menuSections = "menu2";
 
         if (fs.existsSync(commandsPath)) {
             const files = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
