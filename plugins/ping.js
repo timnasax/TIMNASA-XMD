@@ -23,7 +23,7 @@ const ping = async (m, Matrix) => {
     const end = new Date().getTime();
     const responseTime = (end - start) / 1000;
 
-    const text = `*Buddy-XTR Speed: ${responseTime.toFixed(2)}ms ${reactionEmoji}*`;
+    const text = `*Timnasa Tech Speed: ${responseTime.toFixed(2)}ms ${reactionEmoji}*`;
 
     await Matrix.sendMessage(m.from, {
       text,
@@ -33,7 +33,7 @@ const ping = async (m, Matrix) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterJid: '120363313938933929@newsletter',
-          newsletterName: "Buddy-XTR",
+          newsletterName: "Timnasa-Tech",
           serverMessageId: 143
         }
       }
