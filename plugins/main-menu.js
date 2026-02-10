@@ -1,96 +1,105 @@
 import moment from 'moment-timezone';
 import fs from 'fs';
 import os from 'os';
-import pkg from '@whiskeysockets/baileys';
-const { generateWAMessageFromContent, proto } = pkg;
-import config from '../config.cjs';
 import path from 'path';
 import axios from 'axios';
+import config from '../config.cjs';
 
 const menu = async (m, Matrix) => {
   try {
     const prefix = config.PREFIX;
     const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
     
-    // Commands za kuwasha menu
-    const validCommands = ['menu', 'help', 'list', 'fullmenu'];
-    if (!validCommands.includes(cmd)) return;
+    if (!['menu', 'help', 'list'].includes(cmd)) return;
 
     // --- SYSTEM INFO ---
     const uptime = process.uptime();
     const day = Math.floor(uptime / (24 * 3600));
     const hours = Math.floor((uptime % (24 * 3600)) / 3600);
     const minutes = Math.floor((uptime % 3600) / 60);
-    const seconds = Math.floor(uptime % 60);
-
     const time = moment().tz("Africa/Nairobi").format("HH:mm:ss");
-    const date = moment().tz("Africa/Nairobi").format("DD/MM/YYYY");
 
-    // --- DYNAMIC COMMAND LOADING ---
-    // Inasoma files zote kwenye folder la 'commands'
+    // --- AUTOMATIC CATEGORIZATION ---
     const commandsPath = path.join(process.cwd(), 'commands');
-    let commandList = "";
-    
+    let categories = {
+      'DOWNLOAD': [],
+      'GROUP': [],
+      'OWNER': [],
+      'TOOLS': [],
+      'OTHERS': []
+    };
+
     if (fs.existsSync(commandsPath)) {
-        const files = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-        // Inatengeneza list ya commands kwa emoji ya doti
-        commandList = files.map(file => `┃◈┃• ${file.replace('.js', '')}`).join('\n');
-    } else {
-        commandList = "┃◈┃• No commands found.";
+      const files = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+      
+      files.forEach(file => {
+        const name = file.replace('.js', '');
+        // Logic ya kupanga (unaweza kuongeza maneno hapa)
+        if (['ytmp3', 'ytmp4', 'play', 'song', 'video', 'fb', 'tiktok', 'insta', 'apk'].some(v => name.includes(v))) {
+          categories['DOWNLOAD'].push(name);
+        } else if (['add', 'kick', 'promote', 'demote', 'hidetag', 'tagall', 'antilink', 'group'].some(v => name.includes(v))) {
+          categories['GROUP'].push(name);
+        } else if (['setpp', 'block', 'unblock', 'restart', 'mode', 'join', 'leave'].some(v => name.includes(v))) {
+          categories['OWNER'].push(name);
+        } else if (['calc', 'ai', 'gpt', 'runtime', 'ping', 'trt'].some(v => name.includes(v))) {
+          categories['TOOLS'].push(name);
+        } else {
+          categories['OTHERS'].push(name);
+        }
+      });
     }
 
-    // --- MENU STRUCTURE ---
-    const str = `
+    // --- KUJENGA MUUNDO WA UKURASA (PAGE VIEW) ---
+    let menuText = `
 ╭━━━〔 *${config.BOT_NAME || 'TIMNASA-XMD'}* 〕━━━┈⊷
 ┃★╭──────────────
-┃★│ Owner : *${config.OWNER_NAME || 'Timoth'}*
-┃★│ User : *${m.pushName}*
-┃★│ Mode : *${config.MODE}*
-┃★│ Platform : *${os.platform()}*
-┃★│ Uptime : *${day}d ${hours}h ${minutes}m*
-┃★│ Time : *${time}*
-┃★│ Prefix : [ ${prefix} ]
+┃★│ 👤 User: *${m.pushName}*
+┃★│ ⏳ Uptime: *${day}d ${hours}h ${minutes}m*
+┃★│ ⌚ Time: *${time}*
+┃★│ 🛠️ Prefix: [ ${prefix} ]
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷
 
-> Hello🌹 *${m.pushName}*, hizi hapa ni amri (commands) zilizopo kwenye mfumo wangu kwa sasa:
+> Hello🌹 *${m.pushName}*! Chagua kategoria ya amri hapa chini:
+`;
 
-╭━━〔 *All Commands List* 〕━━┈⊷
-┃◈╭─────────────·๏
-${commandList}
-┃◈└───────────┈⊷
-╰──────────────┈⊷
+    // Kutengeneza list ya kurasa/categories
+    for (let category in categories) {
+      if (categories[category].length > 0) {
+        menuText += `\n╭━━〔 *${category} MENU* 〕━━┈⊷\n`;
+        menuText += `┃◈╭─────────────·๏\n`;
+        categories[category].forEach(c => {
+          menuText += `┃◈┃• ${prefix}${c}\n`;
+        });
+        menuText += `┃◈└───────────┈⊷\n`;
+        menuText += `╰──────────────┈⊷\n`;
+      }
+    }
 
-*🛡️ SYSTEM STATUS*
-┃◈ Anti-Delete: ${config.ANTI_DELETE ? '✅' : '❌'}
-┃◈ Auto-View: ${config.AUTO_VIEW_STATUS ? '✅' : '❌'}
-
-> *Powered by Timnasa Softwares*`;
+    menuText += `\n> *Timnasa Softwares 2026*`;
 
     // --- HANDLING IMAGE ---
     let menuImage;
-    const defaultImg = 'https://files.catbox.moe/jmyv02.jpg'; // Picha yako uliyotumia mwanzo
-    
+    const defaultImg = 'https://files.catbox.moe/jmyv02.jpg';
     try {
-        const imgUrl = config.MENU_IMAGE || defaultImg;
-        const response = await axios.get(imgUrl, { responseType: 'arraybuffer' });
-        menuImage = Buffer.from(response.data, 'binary');
+      const imgUrl = config.MENU_IMAGE || defaultImg;
+      const response = await axios.get(imgUrl, { responseType: 'arraybuffer' });
+      menuImage = Buffer.from(response.data, 'binary');
     } catch {
-        // Fallback kama internet ikisumbua au picha haipo
-        menuImage = fs.readFileSync('./Carltech/mymenu.jpg'); 
+      menuImage = fs.readFileSync('./Carltech/mymenu.jpg'); 
     }
 
-    // --- SEND MENU ---
+    // --- TUMA MENU ---
     await Matrix.sendMessage(m.from, {
       image: menuImage,
-      caption: str,
+      caption: menuText,
       contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999,
         isForwarded: true,
         externalAdReply: {
-            title: "TIMNASA-TMD DASHBOARD",
-            body: "Active & Stable",
+            title: "TIMNASA-TMD COMMANDS PAGE",
+            body: "Powered by Timoth",
             thumbnail: menuImage,
             sourceUrl: "https://whatsapp.com/channel/0029Vb6uo9yJ3juwi9GYgS47",
             mediaType: 1,
@@ -99,15 +108,14 @@ ${commandList}
       }
     }, { quoted: m });
 
-    // --- SEND AUDIO (VOICE NOTE) ---
+    // --- TUMA SAUTI ---
     const audioPath = './Buddy/nothing.mp3';
     if (fs.existsSync(audioPath)) {
-        await Matrix.sendMessage(m.from, {
-            audio: fs.readFileSync(audioPath),
-            mimetype: 'audio/mpeg',
-            ptt: true,
-            waveform: [0, 99, 0, 99, 0, 99, 0]
-        }, { quoted: m });
+      await Matrix.sendMessage(m.from, {
+        audio: fs.readFileSync(audioPath),
+        mimetype: 'audio/mpeg',
+        ptt: true
+      }, { quoted: m });
     }
 
   } catch (error) {
