@@ -1,16 +1,16 @@
 {
-  "name": "Buddy-XTR",
+  "name": "Timnasa-Tech",
   "version": "10.8.1",
   "description": "A whatsapp bot created by Carl william",
-  "main": "synapse.js",
+  "main": "timoth.js",
   "type": "module",
   "scripts": {
-    "start": "pm2 start synapse.js --deep-monitoring --attach --name  Buddy-XTR",
-    "stop": "pm2 stop  Buddy-XTR",
-    "restart": "pm2 restart  Buddy-XTR"
+    "start": "pm2 start synapse.js --deep-monitoring --attach --name  Timnasa-Tech",
+    "stop": "pm2 stop  Timnasa-Tech",
+    "restart": "pm2 restart  Timnasa-Tech"
   },
   "keywords": ["carl-william", "whatsapp-bot", "whatsapp md bot"],
-  "author": "Buddy-XTR",
+  "author": "Timnasa-Tech",
   "license": "ISC",
   "dependencies": {
     "@whiskeysockets/baileys": "npm:xmd-baileys@latest",
