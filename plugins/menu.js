@@ -10,17 +10,18 @@ const menu = async (m, Matrix) => {
     const prefix = config.PREFIX;
     const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
     
+    // Command triggers
     if (!['menu', 'help', 'list'].includes(cmd)) return;
 
-    // --- MFUMO WA MUDA ---
+    // --- SYSTEM TIME & UPTIME ---
     const uptime = process.uptime();
     const day = Math.floor(uptime / (24 * 3600));
     const hours = Math.floor((uptime % (24 * 3600)) / 3600);
     const minutes = Math.floor((uptime % 3600) / 60);
     const time = moment().tz("Africa/Nairobi").format("HH:mm:ss");
 
-    // --- KUSOMA PLUGINS DYNAMICALLY ---
-    const pluginsPath = path.join(process.cwd(), 'plugins'); // Inasoma folder la PLUGINS
+    // --- DYNAMIC PLUGINS LOADING ---
+    const pluginsPath = path.join(process.cwd(), 'plugins'); 
     let categories = {
       'DOWNLOAD': [],
       'GROUP': [],
@@ -38,7 +39,7 @@ const menu = async (m, Matrix) => {
       files.forEach(file => {
         const name = file.replace('.js', '');
         
-        // --- LOGIC YA KUPANGA KWENYE KURASA ---
+        // --- CATEGORIZATION LOGIC ---
         if (['ytmp3', 'ytmp4', 'play', 'song', 'video', 'fb', 'tiktok', 'insta', 'apk', 'gitclone', 'gdrive', 'mediafire'].some(v => name.includes(v))) {
           categories['DOWNLOAD'].push(name);
         } else if (['add', 'kick', 'promote', 'demote', 'hidetag', 'tagall', 'antilink', 'group', 'welcome', 'setname', 'setdesc'].some(v => name.includes(v))) {
@@ -56,12 +57,12 @@ const menu = async (m, Matrix) => {
         } else if (['ping', 'alive', 'owner', 'infobot', 'runtime'].some(v => name.includes(v))) {
           categories['MAIN'].push(name);
         } else {
-          categories['MAIN'].push(name); // Default kundi
+          categories['MAIN'].push(name); 
         }
       });
     }
 
-    // --- UJENZI WA DASHBOARD ---
+    // --- DASHBOARD UI CONSTRUCTION ---
     let menuText = `
 ╭━━━〔 *${config.BOT_NAME || 'TIMNASA-XMD'}* 〕━━━┈⊷
 ┃★╭──────────────
@@ -73,10 +74,9 @@ const menu = async (m, Matrix) => {
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷
 
-> Hello🌹 *${m.pushName}*! Hii ndiyo list ya commands zote zilizosomwa kutoka kwenye mfumo wa plugins:
+> Hello🌹 *${m.pushName}*! Here is the list of available commands synced from the plugins folder:
 `;
 
-    // Kupanga kila kurasa (Page section)
     Object.keys(categories).forEach(category => {
       if (categories[category].length > 0) {
         menuText += `\n╭━━〔 *${category} MENU* 〕━━┈⊷\n`;
@@ -91,7 +91,7 @@ const menu = async (m, Matrix) => {
 
     menuText += `\n> *Timnasa Softwares © 2026*`;
 
-    // --- HANDLING IMAGE ---
+    // --- IMAGE HANDLING ---
     let menuImage;
     const defaultImg = 'https://files.catbox.moe/jmyv02.jpg';
     try {
@@ -102,7 +102,7 @@ const menu = async (m, Matrix) => {
       menuImage = fs.readFileSync('./Carltech/mymenu.jpg'); 
     }
 
-    // --- SEND MESSAGE ---
+    // --- SEND MESSAGE WITH CHANNEL JID (NEWSLETTER) ---
     await Matrix.sendMessage(m.from, {
       image: menuImage,
       caption: menuText,
@@ -110,6 +110,11 @@ const menu = async (m, Matrix) => {
         mentionedJid: [m.sender],
         forwardingScore: 999,
         isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: '120363406146813524@newsletter',
+          newsletterName: "TimnasaTech Developers",
+          serverMessageId: 143
+        },
         externalAdReply: {
             title: "TIMNASA-TMD DYNAMIC MENU",
             body: "Reading from plugins folder...",
@@ -121,19 +126,8 @@ const menu = async (m, Matrix) => {
       }
     }, { quoted: m });
 
-    // --- VOICE NOTE (AUDIO) ---
-    const audioPath = './Buddy/nothing.mp3';
-    if (fs.existsSync(audioPath)) {
-      await Matrix.sendMessage(m.from, {
-        audio: fs.readFileSync(audioPath),
-        mimetype: 'audio/mpeg',
-        ptt: true
-      }, { quoted: m });
-    }
-
   } catch (error) {
     console.error('Menu Error:', error);
-    Matrix.sendMessage(m.from, { text: "Error loading plugins: " + error.message });
   }
 };
 
