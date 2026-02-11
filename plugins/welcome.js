@@ -1,68 +1,94 @@
 import config from '../config.cjs';
+import moment from 'moment-timezone';
+
+/**
+ * TIMNASA TMD - SELF-CONTAINED GROUP EVENTS
+ * This file handles both the toggle commands and the event listeners.
+ */
 
 const gcEvent = async (m, Matrix) => {
-  const prefix = config.PREFIX;
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
-  const text = m.body.slice(prefix.length + cmd.length).trim();
+    const prefix = config.PREFIX;
+    const body = m.body || "";
+    const cmd = body.startsWith(prefix) ? body.slice(prefix.length).trim().split(/\s+/)[0].toLowerCase() : "";
+    const text = body.slice(prefix.length + cmd.length).trim().toLowerCase();
 
-  if (cmd === 'welcome') {
-    // 1. Check if it's a group
-    if (!m.isGroup) return m.reply("*📛 THIS COMMAND CAN ONLY BE USED IN GROUPS*");
+    // 1. COMMAND HANDLER (Toggle On/Off)
+    if (cmd === 'welcome' || cmd === 'goodbye') {
+        if (!m.isGroup) return m.reply("*📛 THIS COMMAND IS ONLY FOR GROUPS*");
 
-    try {
-      const groupMetadata = await Matrix.groupMetadata(m.from);
-      const participants = groupMetadata.participants;
-      
-      // 2. Identify Bot, Owner, and Sender status
-      const botNumber = await Matrix.decodeJid(Matrix.user.id);
-      const isBotAdmin = participants.find(p => p.id === botNumber)?.admin;
-      const isSenderAdmin = participants.find(p => p.id === m.sender)?.admin;
-      
-      // Owner/Sudo Check (Checks config.OWNER which is usually an array or string)
-      const isOwner = config.OWNER.includes(m.sender.split('@')[0]) || m.isOwner;
+        const groupMetadata = await Matrix.groupMetadata(m.from);
+        const participants = groupMetadata.participants;
+        const botNumber = await Matrix.decodeJid(Matrix.user.id);
+        
+        const isBotAdmin = participants.find(p => p.id === botNumber)?.admin;
+        const isSenderAdmin = participants.find(p => p.id === m.sender)?.admin;
+        const isOwner = config.OWNER.includes(m.sender.split('@')[0]) || m.isOwner;
 
-      // 3. Authorization Logic: Must be Owner OR Admin
-      if (!isOwner && !isSenderAdmin) {
-        return m.reply("*⚠️ ACCESS DENIED*\nThis command is reserved for *Group Admins* and the *Bot Owner* only.");
-      }
+        if (!isOwner && !isSenderAdmin) return m.reply("*⚠️ ACCESS DENIED: Admins or Owner Only*");
+        if (!isBotAdmin) return m.reply("*📛 BOT ERROR: I need Admin rights to manage events.*");
 
-      // 4. Bot Admin Check
-      if (!isBotAdmin) return m.reply("*📛 BOT ERROR:* I need to be an *Admin* to manage welcome messages.");
-
-      let responseMessage;
-      const channelInfo = {
-        newsletterJid: '120363406146813524@newsletter',
-        newsletterName: "TIMNASA TMD • SYSTEM",
-        serverMessageId: 143
-      };
-
-      // 5. Handle Logic
-      if (text === 'on') {
-        config.WELCOME = true;
-        responseMessage = "✅ *WELCOME SYSTEM ACTIVATED*\n\nTimnasa Tmd will now greet new members and say goodbye to those who leave.";
-      } else if (text === 'off') {
-        config.WELCOME = false;
-        responseMessage = "❌ *WELCOME SYSTEM DEACTIVATED*\n\nAutomated greetings have been turned off.";
-      } else {
-        // Professional Usage Guide
-        responseMessage = `✨ *TIMNASA TMD WELCOME MANAGER*\n\n*Current Status:* ${config.WELCOME ? '🟢 Enabled' : '🔴 Disabled'}\n\n*Commands:* \n📝 \`${prefix}welcome on\` - Enable\n📝 \`${prefix}welcome off\` - Disable\n\n*Authorized Users:* \n• Group Admins\n• Bot Owner/Sudo`;
-      }
-
-      // 6. Send Response
-      await Matrix.sendMessage(m.from, { 
-        text: responseMessage,
-        contextInfo: {
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: channelInfo,
-          mentionedJid: [m.sender],
+        if (text === 'on') {
+            config[cmd.toUpperCase()] = true;
+            return m.reply(`✅ *${cmd.toUpperCase()} SYSTEM ENABLED*`);
+        } else if (text === 'off') {
+            config[cmd.toUpperCase()] = false;
+            return m.reply(`❌ *${cmd.toUpperCase()} SYSTEM DISABLED*`);
+        } else {
+            return m.reply(`*USAGE:* ${prefix}${cmd} on/off\n*STATUS:* ${config[cmd.toUpperCase()] ? 'ON' : 'OFF'}`);
         }
-      }, { quoted: m });
-
-    } catch (error) {
-      console.error("Error in welcome command:", error);
-      await Matrix.sendMessage(m.from, { text: "❌ *SYSTEM ERROR:* Unable to process the request." }, { quoted: m });
     }
-  }
+};
+
+/**
+ * EVENT LISTENER
+ * This function should be called by your connection handler
+ * for 'group-participants.update' events.
+ */
+export const handleGroupUpdate = async (Matrix, update) => {
+    const { id, participants, action } = update;
+    
+    // Check if goodbye is enabled in config
+    if (action === 'remove' && config.GOODBYE) {
+        try {
+            const metadata = await Matrix.groupMetadata(id);
+            const timeZone = "Africa/Nairobi";
+            const currentTime = moment().tz(timeZone).format("HH:mm:ss, DD/MM/YYYY");
+            
+            for (let jid of participants) {
+                const userName = jid.split('@')[0];
+                const memberCount = metadata.participants.length;
+
+                const goodbyeTemplate = `*👋 USER LEFT THE GROUP*\n\n` +
+                    `*👤 User:* @${userName}\n` +
+                    `*📅 Departure Time:* ${currentTime}\n` +
+                    `*📊 Members Remaining:* ${memberCount}\n\n` +
+                    `> *We wish them the best wherever they go.* ✨\n\n` +
+                    `*TIMNASA TMD • SYSTEM*`;
+
+                await Matrix.sendMessage(id, {
+                    text: goodbyeTemplate,
+                    contextInfo: {
+                        mentionedJid: [jid],
+                        isForwarded: true,
+                        forwardedNewsletterMessageInfo: {
+                            newsletterJid: '120363406146813524@newsletter',
+                            newsletterName: "TIMNASA TMD • LOGS",
+                            serverMessageId: 143,
+                        },
+                        externalAdReply: {
+                            title: "MEMBER DEPARTED",
+                            body: `Group: ${metadata.subject}`,
+                            mediaType: 1,
+                            thumbnailUrl: "https://i.imgur.com/your-image.jpg", // Replace with your logo
+                            renderLargerThumbnail: false,
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Goodbye Event Error:", error);
+        }
+    }
 };
 
 export default gcEvent;
