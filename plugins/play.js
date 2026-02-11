@@ -1,4 +1,3 @@
-// app/plugins/play.js (ESM)
 import axios from "axios";
 import yts from "yt-search";
 import config from "../config.cjs";
@@ -6,144 +5,160 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { spawn } from "child_process";
-
-async function getFfmpegBin() {
-  // Try ffmpeg-static first (best on Heroku)
-  try {
-    const mod = await import("ffmpeg-static");
-    const ffmpegPath = mod.default || mod;
-    if (ffmpegPath) return ffmpegPath;
-  } catch (_) {
-    // ignore
-  }
-  // Fallback to system ffmpeg if available (if you use buildpack)
-  return "ffmpeg";
-}
-
-async function downloadToFile(url, outPath) {
-  const res = await axios.get(url, {
-    responseType: "stream",
-    timeout: 60000,
-    maxRedirects: 5,
-    headers: { "User-Agent": "Mozilla/5.0" },
-  });
-
-  await new Promise((resolve, reject) => {
-    const w = fs.createWriteStream(outPath);
-    res.data.pipe(w);
-    w.on("finish", resolve);
-    w.on("error", reject);
-  });
-}
-
-async function convertToOpus(inputPath, outputPath) {
-  const ffmpegBin = await getFfmpegBin();
-
-  return new Promise((resolve, reject) => {
-    const args = [
-      "-y",
-      "-i", inputPath,
-      "-vn",
-      "-ac", "1",
-      "-ar", "48000",
-      "-b:a", "128k",
-      "-c:a", "libopus",
-      outputPath,
-    ];
-
-    const ff = spawn(ffmpegBin, args);
-    let err = "";
-
-    ff.stderr.on("data", (d) => (err += d.toString()));
-    ff.on("error", (e) => reject(e));
-    ff.on("close", (code) => {
-      if (code === 0) return resolve();
-      reject(new Error("ffmpeg failed: " + err.slice(-2000)));
-    });
-  });
-}
+import moment from "moment-timezone";
 
 const play = async (m, gss) => {
   const prefix = config.PREFIX;
   const body = m.body || "";
-
-  const cmd = body.startsWith(prefix)
-    ? body.slice(prefix.length).trim().split(/\s+/)[0]?.toLowerCase()
-    : "";
-
-  const args = body.startsWith(prefix)
-    ? body.slice(prefix.length).trim().split(/\s+/).slice(1)
-    : [];
+  const cmd = body.startsWith(prefix) ? body.slice(prefix.length).trim().split(/\s+/)[0]?.toLowerCase() : "";
+  const args = body.startsWith(prefix) ? body.slice(prefix.length).trim().split(/\s+/).slice(1) : [];
 
   if (cmd !== "play") return;
 
-  let inputFile, outputFile;
-
   try {
-    if (!args.length) return m.reply("*Example:* .play shape of you");
-
-    const query = args.join(" ");
-    await m.reply(`🔍 *Searching:* ${query}`);
-
-    const search = await yts(query);
-    const video = search?.videos?.[0];
-    if (!video) return m.reply("❌ *No song found*");
-
-    const youtubeUrl = `https://www.youtube.com/watch?v=${video.videoId}`;
-    await m.reply(`🎧 *Processing:* ${video.title}`);
-
-    const apiUrl = `https://apiskeith.vercel.app/download/audio?url=${encodeURIComponent(youtubeUrl)}`;
-    const apiRes = await axios.get(apiUrl, { timeout: 30000 });
-
-    if (!apiRes.data?.status || !apiRes.data?.result) {
-      return m.reply("❌ *Audio API failed*");
-    }
-
-    const audioUrl = apiRes.data.result;
-    if (typeof audioUrl !== "string" || !audioUrl.startsWith("http")) {
-      return m.reply("❌ *Invalid audio URL*");
-    }
-
-    const tmp = os.tmpdir();
-    const id = Date.now();
-    inputFile = path.join(tmp, `play_${id}.input`);
-    outputFile = path.join(tmp, `play_${id}.ogg`);
-
-    await downloadToFile(audioUrl, inputFile);
-    await convertToOpus(inputFile, outputFile);
-
-    const size = fs.statSync(outputFile).size;
-    if (size > 18 * 1024 * 1024) {
-      return m.reply("❌ *Audio too large. Try a shorter song*");
-    }
-
-    // 🎙️ send as voice note
-    await gss.sendMessage(
-      m.from,
-      {
-        audio: fs.readFileSync(outputFile),
-        mimetype: "audio/ogg; codecs=opus",
-        ptt: true,
+    await gss.sendMessage(m.from, {
+      text: '*Sᥱᥲrᥴhιng for ყoᥙr song♫*',
+      contextInfo: {
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: '120363406146813524@newsletter',
+          newsletterName: "╭••➤®️Timnasa Tmd",
+          serverMessageId: 143,
+        },
       },
-      { quoted: m }
-    );
+    }, { quoted: m });
 
-    await m.reply(`🎙️ *Voice note sent:* ${video.title}`);
-  } catch (err) {
-    console.error("PLAY ERROR:", err?.response?.data || err);
-
-    // Give a helpful message when ffmpeg is missing
-    const msg = String(err?.message || "");
-    if (msg.includes("spawn ffmpeg") || msg.includes("ENOENT")) {
-      return m.reply(
-        "❌ *ffmpeg not found.* Install `ffmpeg-static` in dependencies OR add an ffmpeg buildpack."
-      );
+    if (!args.length) {
+      return gss.sendMessage(m.from, {
+        text: 'Please provide a song name or keyword.',
+        contextInfo: {
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: '120363406146813524@newsletter',
+            newsletterName: "╭••➤®️Timnasa Tmd",
+            serverMessageId: 143,
+          },
+        },
+      }, { quoted: m });
     }
 
-    return m.reply("❌ *Failed to send audio*");
-  } finally {
-    try { if (inputFile && fs.existsSync(inputFile)) fs.unlinkSync(inputFile); } catch {}
-    try { if (outputFile && fs.existsSync(outputFile)) fs.unlinkSync(outputFile); } catch {}
+    const query = args.join(' ');
+    const search = await yts(query);
+
+    if (!search || !search.videos || !search.videos[0]) {
+      return gss.sendMessage(m.from, {
+        text: 'No results found for your query.',
+        contextInfo: {
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: '120363406146813524@newsletter',
+            newsletterName: "╭••➤®️Timnasa Tmd",
+            serverMessageId: 143,
+          },
+        },
+      }, { quoted: m });
+    }
+
+    const video = search.videos[0];
+    const safeTitle = video.title.replace(/[\\/:*?"<>|]/g, '');
+    const fileName = `${safeTitle}.mp3`;
+    const apiURL = `https://noobs-api.top/dipto/ytDl3?link=${encodeURIComponent(video.videoId)}&format=mp3`;
+
+    try {
+      const response = await axios.get(apiURL);
+
+      if (response.status !== 200) {
+        return gss.sendMessage(m.from, {
+          text: 'Failed to retrieve the MP3 download link. Please try again later.',
+          contextInfo: {
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterJid: '120363406146813524@newsletter',
+              newsletterName: "╭••➤®️Timnasa Tmd",
+              serverMessageId: 143,
+            },
+          },
+        }, { quoted: m });
+      }
+
+      const data = response.data;
+
+      if (!data.downloadLink) {
+        return gss.sendMessage(m.from, {
+          text: 'Failed to retrieve the MP3 download link.',
+          contextInfo: {
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterJid: '120363406146813524@newsletter',
+              newsletterName: "╭••➤®️Timnasa Tmd",
+              serverMessageId: 143,
+            },
+          },
+        }, { quoted: m });
+      }
+
+      moment.tz.setDefault("Africa/Botswana");
+      const hour = moment().hour();
+      let greeting = "Good Morning";
+
+      if (hour >= 12 && hour < 18) {
+        greeting = "Good Afternoon!";
+      } else if (hour >= 18) {
+        greeting = "Good Evening!";
+      } else if (hour >= 22 || hour < 5) {
+        greeting = "Good Night";
+      }
+
+      await gss.sendMessage(m.from, {
+        image: { url: video.thumbnail },
+        caption: `🎧title: *${video.title}* 🎼views: *${video.views.toLocaleString()}* 🎻 uploaded: *${video.ago}* *⇆ㅤ ||◁ㅤ❚❚ㅤ▷||ㅤ ↻* 0:00 ──〇─────── : *${video.timestamp}*`,
+        contextInfo: {
+          externalAdReply: {
+            title: video.title,
+            mediaType: 1,
+            previewType: 0,
+            thumbnailUrl: video.thumbnail,
+            renderLargerThumbnail: false,
+          },
+        },
+      }, { quoted: m });
+
+      await gss.sendMessage(m.from, {
+        audio: { url: data.downloadLink },
+        mimetype: 'audio/mpeg',
+        fileName,
+        contextInfo: {
+          externalAdReply: {
+            title: " ⇆ㅤ ||◁ㅤ❚❚ㅤ▷||ㅤ ↻ ",
+            mediaType: 1,
+            previewType: 0,
+            thumbnailUrl: video.thumbnail,
+            renderLargerThumbnail: true,
+          },
+        },
+      }, { quoted: m });
+    } catch (err) {
+      console.error('[PLAY] API Error:', err);
+
+      if (err.response && err.response.status === 500) {
+        await gss.sendMessage(m.from, {
+          text: 'The API is currently experiencing issues. Please try again later.',
+          contextInfo: {
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterJid: '120363406146813524@newsletter',
+              newsletterName: "╭••➤®️Timnasa Tmd",
+              serverMessageId: 143,
+            },
+          },
+        }, { quoted: m });
+      } else {
+        await gss.sendMessage(m.from, { text: 'An error occurred: ' + err.message });
+      }
+    }
+  } catch (err) {
+    console.error('[PLAY] Error:', err);
+    await gss.sendMessage(m.from, { text: 'An error occurred: ' + err.message });
   }
 };
 
