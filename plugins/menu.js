@@ -1,26 +1,24 @@
 import moment from 'moment-timezone';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import axios from 'axios';
 import config from '../config.cjs';
+import { pathToFileURL } from 'url';
 
 const menu = async (m, Matrix) => {
   try {
     const prefix = config.PREFIX;
-    const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+    const body = m.body || "";
+    const inputCmd = body.startsWith(prefix) ? body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
     
-    // Command triggers
-    if (!['menu', 'help', 'list'].includes(cmd)) return;
+    if (!['menu', 'help', 'list'].includes(inputCmd)) return;
 
-    // --- SYSTEM TIME & UPTIME ---
     const uptime = process.uptime();
     const day = Math.floor(uptime / (24 * 3600));
     const hours = Math.floor((uptime % (24 * 3600)) / 3600);
     const minutes = Math.floor((uptime % 3600) / 60);
     const time = moment().tz("Africa/Nairobi").format("HH:mm:ss");
 
-    // --- DYNAMIC PLUGINS LOADING ---
     const pluginsPath = path.join(process.cwd(), 'plugins'); 
     let categories = {
       'DOWNLOAD': [],
@@ -36,52 +34,62 @@ const menu = async (m, Matrix) => {
     if (fs.existsSync(pluginsPath)) {
       const files = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
       
-      files.forEach(file => {
-        const name = file.replace('.js', '');
-        
-        // --- CATEGORIZATION LOGIC ---
-        if (['ytmp3', 'ytmp4', 'play', 'song', 'video', 'fb', 'tiktok', 'insta', 'apk', 'gitclone', 'gdrive', 'mediafire'].some(v => name.includes(v))) {
-          categories['DOWNLOAD'].push(name);
-        } else if (['add', 'kick', 'promote', 'demote', 'hidetag', 'tagall', 'antilink', 'group', 'welcome', 'setname', 'setdesc'].some(v => name.includes(v))) {
-          categories['GROUP'].push(name);
-        } else if (['setpp', 'block', 'unblock', 'join', 'leave', 'restart', 'mode', 'anticall', 'autotyping', 'autoread'].some(v => name.includes(v))) {
-          categories['OWNER'].push(name);
-        } else if (['ai', 'gpt', 'dalle', 'remini', 'gemini', 'bug', 'report'].some(v => name.includes(v))) {
-          categories['AI'].push(name);
-        } else if (['calc', 'tempmail', 'checkmail', 'trt', 'tts'].some(v => name.includes(v))) {
-          categories['TOOLS'].push(name);
-        } else if (['yts', 'imdb', 'google', 'gimage', 'pinterest', 'lyrics', 'ytsearch'].some(v => name.includes(v))) {
-          categories['SEARCH'].push(name);
-        } else if (['truecaller', 'instastalk', 'githubstalk'].some(v => name.includes(v))) {
-          categories['STALK'].push(name);
-        } else if (['ping', 'alive', 'owner', 'infobot', 'runtime'].some(v => name.includes(v))) {
-          categories['MAIN'].push(name);
-        } else {
-          categories['MAIN'].push(name); 
+      for (const file of files) {
+        try {
+          const filePath = path.join(pluginsPath, file);
+          const fileUrl = pathToFileURL(filePath).href;
+          const plugin = await import(fileUrl);
+          
+          // Hapa tunasoma jina la command ndani ya file badala ya jina la file
+          // Inatafuta 'cmd', 'command', au 'name' ndani ya file
+          const cmdName = plugin.default?.cmd || plugin.default?.command || plugin.default?.name || file.replace('.js', '');
+          const name = Array.isArray(cmdName) ? cmdName[0] : cmdName;
+
+          // Categorization Logic kulingana na jina la command
+          if (['ytmp3', 'ytmp4', 'play', 'song', 'video', 'fb', 'tiktok', 'insta', 'apk', 'gitclone', 'gdrive', 'mediafire'].some(v => name.includes(v))) {
+            categories['DOWNLOAD'].push(name);
+          } else if (['add', 'kick', 'promote', 'demote', 'hidetag', 'tagall', 'antilink', 'group', 'welcome', 'setname', 'setdesc', 'terminateall', 'tagnation', 'invite'].some(v => name.includes(v))) {
+            categories['GROUP'].push(name);
+          } else if (['setpp', 'block', 'unblock', 'join', 'leave', 'restart', 'mode', 'anticall', 'autotyping', 'autoread'].some(v => name.includes(v))) {
+            categories['OWNER'].push(name);
+          } else if (['ai', 'gpt', 'dalle', 'remini', 'gemini', 'bug', 'report'].some(v => name.includes(v))) {
+            categories['AI'].push(name);
+          } else if (['calc', 'tempmail', 'checkmail', 'trt', 'tts'].some(v => name.includes(v))) {
+            categories['TOOLS'].push(name);
+          } else if (['yts', 'imdb', 'google', 'gimage', 'pinterest', 'lyrics', 'ytsearch'].some(v => name.includes(v))) {
+            categories['SEARCH'].push(name);
+          } else if (['truecaller', 'instastalk', 'githubstalk'].some(v => name.includes(v))) {
+            categories['STALK'].push(name);
+          } else {
+            categories['MAIN'].push(name); 
+          }
+        } catch (e) {
+          console.error(`Error loading plugin ${file}:`, e);
         }
-      });
+      }
     }
 
-    // --- DASHBOARD UI CONSTRUCTION ---
     let menuText = `
-╭━━━〔 *${config.BOT_NAME || 'TIMNASA-XMD'}* 〕━━━┈⊷
+╭━━━〔 *${config.BOT_NAME || 'TIMNASA-TMD'}* 〕━━━┈⊷
 ┃★╭──────────────
 ┃★│ 👤 *User:* ${m.pushName}
 ┃★│ ⏳ *Uptime:* ${day}d ${hours}h ${minutes}m
 ┃★│ ⌚ *Time:* ${time}
 ┃★│ 🛠️ *Prefix:* [ ${prefix} ]
-┃★│ 📚 *Plugins:* ${fs.readdirSync(pluginsPath).length} files
+┃★│ 📚 *Commands:* Synchronized
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷
 
-> Hello🌹 *${m.pushName}*! Here is the list of available commands synced from the plugins folder:
+> Hello🌹 *${m.pushName}*! Here are the active commands from Timnasa Tmd:
 `;
 
     Object.keys(categories).forEach(category => {
       if (categories[category].length > 0) {
+        // Kuondoa marudio na kupanga (Unique & Sort)
+        const uniqueCmds = [...new Set(categories[category])].sort();
         menuText += `\n╭━━〔 *${category} MENU* 〕━━┈⊷\n`;
         menuText += `┃◈╭─────────────·๏\n`;
-        categories[category].sort().forEach(c => {
+        uniqueCmds.forEach(c => {
           menuText += `┃◈┃• ${prefix}${c}\n`;
         });
         menuText += `┃◈└───────────┈⊷\n`;
@@ -91,7 +99,6 @@ const menu = async (m, Matrix) => {
 
     menuText += `\n> *Timnasa Softwares © 2026*`;
 
-    // --- IMAGE HANDLING ---
     let menuImage;
     const defaultImg = 'https://files.catbox.moe/jmyv02.jpg';
     try {
@@ -102,7 +109,6 @@ const menu = async (m, Matrix) => {
       menuImage = fs.readFileSync('./Carltech/mymenu.jpg'); 
     }
 
-    // --- SEND MESSAGE WITH CHANNEL JID (NEWSLETTER) ---
     await Matrix.sendMessage(m.from, {
       image: menuImage,
       caption: menuText,
@@ -112,12 +118,12 @@ const menu = async (m, Matrix) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterJid: '120363406146813524@newsletter',
-          newsletterName: "TimnasaTech Developers",
+          newsletterName: "Timnasa Tmd Developers",
           serverMessageId: 143
         },
         externalAdReply: {
-            title: "TIMNASA-TMD DYNAMIC MENU",
-            body: "Reading from plugins folder...",
+            title: "TIMNASA-TMD PREMIUM MENU",
+            body: "Command sync active...",
             thumbnail: menuImage,
             sourceUrl: "https://whatsapp.com/channel/0029Vb6uo9yJ3juwi9GYgS47",
             mediaType: 1,
