@@ -372,12 +372,7 @@ async function handleAutoViewStatus(mek, Matrix) {
         if (mek.key && mek.key.remoteJid === 'status@broadcast') {
             // Mark status as viewed
             await Matrix.readMessages([mek.key]);
-            console.log(`✅ Auto-viewed status from ${mek.pushName || 'Unknown'}`);
-        }
-    } catch (error) {
-        console.error('Error in auto-view status feature:', error);
-    }
-}
+            console.log(`✅ Auto-viewed status from ${mek.pushName || 'Unknown
 
 // Auto like status handler
 async function handleAutoLikeStatus(mek, Matrix) {
