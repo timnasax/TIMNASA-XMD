@@ -336,6 +336,33 @@ async function handleAntiDelete(mek, Matrix) {
         console.error('Error in anti-delete feature:', error);
     }
 }
+const body = mek.message?.conversation || mek.message?.extendedTextMessage?.text || "";
+const isGroup = mek.key.remoteJid.endsWith('@g.us');
+
+if (isGroup && config.ANTI_LINK) {
+    // List ya link zinazokatazwa
+    const linkRegex = /chat.whatsapp.com\/|whatsapp.com\/channel\//i;
+    
+    if (linkRegex.test(body)) {
+        const isAdmin = /* logic yako ya kucheck kama sender ni admin */;
+        const isBotAdmin = /* logic yako ya kucheck kama bot ni admin */;
+
+        if (!isAdmin && isBotAdmin) {
+            // 1. Futa meseji
+            await Matrix.sendMessage(mek.key.remoteJid, { delete: mek.key });
+            
+            // 2. Toa onyo
+            await Matrix.sendMessage(mek.key.remoteJid, { 
+                text: `🚫 *LINK HAI RUHUSIWI!* @${mek.key.participant.split('@')[0]}\nUjumbe wako umefutwa kwa sababu una link ya group/channel.`,
+                mentions: [mek.key.participant]
+            });
+
+            // 3. Optional: Mtoe mtu (Kick)
+            // await Matrix.groupParticipantsUpdate(mek.key.remoteJid, [mek.key.participant], "remove");
+        }
+    }
+}
+
 
 // Auto view status handler
 async function handleAutoViewStatus(mek, Matrix) {
