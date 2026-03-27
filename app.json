@@ -1,14 +1,14 @@
 {
-  "name": "Timnasa-Tech",
-  "description": "Timnasa-Tech Framework by Fluxxy Devs Tanzanian, Sponsored by Carltech",
-  "logo": "https://files.catbox.moe/jmyv02.jpg",
+  "name": "Buddy-XTR",
+  "description": "Buddy-XTR Framework by Fluxxy Devs Kenya🌹💜, Sponsored by Carltech",
+  "logo": "https://files.catbox.moe/7jt6op.jpg",
   "keywords": ["Carl William", "whatsapp-bot", "whatsapp-md-bot"],
-  "repository": "https://github.com/timnasax/TIMNASA-XMD",
+  "repository": "https://github.com/carl24tech/Buddy-XTR",
   "stack": "container",
   "env": { 
   
     "SESSION_ID": {
-      "description": "Ensure your session Id starts with the word TimnasaTech~$",
+      "description": "Ensure your session Id starts with the word Buddy~$",
       "required": true,
       "value": ""
     },
@@ -25,12 +25,12 @@
     "OWNER_NAME": {
       "description": "Your name as the bot owner",
       "required": true,
-      "value": "Timnasa-Tech"
+      "value": "Carl William"
     },
     "OWNER_NUMBER": {
       "description": "Your WhatsApp number",
       "required": true,
-      "value": "255784766591"
+      "value": "25474xxx"
     },
     "AUTO_READ": {
       "description": "Enable bot to auto-read messages (true/false)",

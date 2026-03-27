@@ -1,6 +1,6 @@
-name: TIMNASA-TECH 
+name: BERA-TECH 
 services:
-  - name: TIMNASA-TECH-SERVICE
+  - name: BERA-TECH-SERVICE
     type: web
     ports:
       - 5000
