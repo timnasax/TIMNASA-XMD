@@ -1,59 +1,119 @@
-## PROPERTY OF THE XTR SOFTWARES KENYA
-  Feel free to deploy and use it on whatsapp, Thank you!
-<div align="center">
-  <a href="https://github.com/carl24tech">
-    <img src="https://github-readme-stats.vercel.app/api?username=carl24tech&show_icons=true&theme=dark&border_color=00ffff&title_color=00ffff&icon_color=00ffff" width="400"/>
-  </a>
-</div>
-  
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Rockstar-ExtraBold&color=blue&lines=𝗙𝗢𝗥𝗞+𝗔𝗡𝗗+𝗦𝗧𝗔𝗥+𝗥𝗘𝗣𝗢)](https://git.io/typing-svg)
- 
+# 🛡️ TIMNASA-XMD WHATSAPP BOT
 
-   
-   <a href="https://github.com/carl24tech/Buddy-XTR/fork"><img title="FORK-REPO" src="https://img.shields.io/badge/FORK-REPO-h?color=magenta&style=for-the-badge&logo=audi" width="297" height="40.45"/></a></p>
+<p align="center">
+  <img src="https://telegra.ph/file/dc3a328616ffc9c2b9f5f.jpg" alt="TIMNASA-XMD Logo" width="200">
+</p>
 
+<p align="center">
+  <a href="https://github.com/timnasax/TIMNASA-XMD/stargazers"><img src="https://img.shields.io/github/stars/timnasax/TIMNASA-XMD?style=for-the-badge&color=yellow" alt="Stars"></a>
+  <a href="https://github.com/timnasax/TIMNASA-XMD/network/members"><img src="https://img.shields.io/github/forks/timnasax/TIMNASA-XMD?style=for-the-badge&color=blue" alt="Forks"></a>
+  <a href="https://github.com/timnasax/TIMNASA-XMD/watchers"><img src="https://img.shields.io/github/watchers/timnasax/TIMNASA-XMD?style=for-the-badge&color=green" alt="Watchers"></a>
+</p>
 
+---
 
+## 🚀 Kuhusu TIMNASA-XMD
+**TIMNASA-XMD** ni WhatsApp Bot yenye nguvu, kasi, na ulinzi wa hali ya juu. Imetengenezwa kusaidia kurahisisha matumizi ya WhatsApp kwa kutumia commands mbalimbali za kiotomatiki.
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Rockstar-ExtraBold&color=blue&lines=GET+SESSION+ID)](https://git.io/typing-svg)
+---
 
-## SCAN QR CODE
+## 🛠️ Hatua za Kuanza (Setup)
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Rockstar-ExtraBold&color=red&lines=SCAN+WITH+EXTERNAL+CAMERA)](https://git.io/typing-svg)
+### 1. Pata Session ID
+Kabla ya ku-deploy, unahitaji kupata Session ID kwa kuunganisha namba yako:
+👉 [**PATA SESSION ID HAPA**](https://tinyurl.com/Timnasa-WhatsApp-bot-pair)
 
-  <a href="https://buddy-session-server-8mzr.onrender.com/qr"><img title="SCAN-QR" src="https://img.shields.io/badge/SCAN-QR-h?color=blue&style=for-the-badge&logo=scania" width="297" height="40.45"/></a></p>
+### 2. Fork & Star
+Hakikisha una-**Fork** repository hii na kuweka **Star** ⭐️ ili kupata updates mpya na sapoti.
+👉 [**FORK REPOSITORY HAPA**](https://github.com/timnasax/TIMNASA-XMD/fork)
 
+---
 
-## PAIR CODES
+## 🚢 Deploy Kwenda Panel/Hosting
+Chagua platform unayopendelea ku-deploy bot yako:
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Rockstar-ExtraBold&color=blue&lines=USE+YOUR+NUMBER)](https://git.io/typing-svg)
+| Platform | Link ya Ku-deploy |
+| :--- | :--- |
+| **Heroku** | [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https://github.com/timnasax/TIMNASA-XMD) |
+| **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/timnasax/TIMNASA-XMD) |
+| **Railway** | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/timnasax/TIMNASA-XMD) |
 
- <a href="https://buddy-session-server-8mzr.onrender.com/"><img title="PAIR-CODES" src="https://img.shields.io/badge/PAIR-CODES-h?color=black&style=for-the-badge&logo=apple" width="297" height="40.45"/></a></p>
+> **Kumbuka:** Kwa kutumia VPS au Panel nyingine, tumia amri hizi:
+> ```bash
+> git clone [https://github.com/timnasax/TIMNASA-XMD](https://github.com/timnasax/TIMNASA-XMD)
+> cd TIMNASA-XMD
+> npm install
+> npm start
+> ```
 
+---
 
-## ALL IN GENERAL
- 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Rockstar-ExtraBold&color=blue&lines=ALL+OPTIONS)](https://git.io/typing-svg)
+## 📢 Mawasiliano na Msaada
+Jiunge na jamii yetu kwa msaada zaidi na updates za kila siku:
 
-<a href="https://buddy-session-server-8mzr.onrender.com/"><img title="GENERAL" src="https://img.shields.io/badge/GENERAL-h?color=black&style=for-the-badge&logo=samsung" width="297" height="40.45"/></a></p>
+* **WhatsApp Channel:** [Jiunge Hapa](https://whatsapp.com/channel/0029Vb6uo9yJ3juwi9GYgS47) 🛡️
+* **WhatsApp Group:** [Pata Msaada Hapa](https://chat.whatsapp.com/JazGLNBxW5XDVEst3PN4kj?mode=gi_t) 💬
 
+---
 
+## ⚙️ Sifa Kuu (Features)
+- ✅ **Kasi ya Ajabu:** Inajibu commands kwa haraka sana.
+- ✅ **Ulinzi (Anti-Ban):** Mifumo imara ya kuzuia namba kufungiwa.
+- ✅ **Multi-Device Support:** Inafanya kazi kwenye matoleo yote ya WhatsApp.
+- ✅ **Kila Siku Update:** Inapokea maboresho mara kwa mara.
 
-## DEPLOYMENT METHODS
+---
 
-<div align="center">
-  <table>
-    <tr>
-      <td><a href="https://deploy-buddy-xtr.vercel.app/" target="_blank"><img src="https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white&labelColor=#ffff&color=00ffff"/></a></td>
-      <td><a href="https://talkdrove.com" target="_blank"><img src="https://img.shields.io/badge/TalkDrove-6971FF?style=for-the-badge&logo=github&logoColor=white&labelColor=000000"/></a></td>
-    </tr>
-    <tr>
-      <td><a href="https://app.koyeb.com/services/deploy?type=git&repository=carl24tech/Buddy-XTR" target="_blank"><img src="https://img.shields.io/badge/Koyeb-FF009D?style=for-the-badge&logo=koyeb&logoColor=white&labelColor=000000"/></a></td>
-      <td><a href="https://railway.app/new" target="_blank"><img src="https://img.shields.io/badge/Railway-FF8700?style=for-the-badge&logo=railway&logoColor=white&labelColor=000000"/></a></td>
-    </tr>
-    <tr>
-      <td><a href="https://dashboard.render.com/web/new" target="_blank"><img src="https://img.shields.io/badge/Render-000000?style=for-the-badge&logo=render&logoColor=white&labelColor=magenta&color=#ffff"/></a></td>
-      <td><a href="https://bot-hosting.net/" target="_blank"><img src="https://img.shields.io/badge/Bothosting-CC00FF?style=for-the-badge&logo=huggingface&logoColor=blue&labelColor=000000"/></a></td>
-    </tr>
-  </table>
-</div>
+## 🤝 mchango (Contribution)
+Kama unataka kuboresha bot hii, unakaribishwa! Fungua *Pull Request* au ripoti *Issues* kwenye sehemu husika hapa GitHub.
+
+---
+**Shukrani kwa kuchagua TIMNASA-XMD!** ✨
+
+## 📜 Orodha ya Commands (Bot Menu)
+Hapa ni baadhi ya commands maarufu unazoweza kutumia baada ya ku-deploy:
+
+| Command | Maelezo |
+| :--- | :--- |
+| `.menu` | Kuona orodha nzima ya huduma za bot. |
+| `.alive` | Kuangalia kama bot iko hewani. |
+| `.song [jina]` | Kudownload nyimbo kutoka YouTube. |
+| `.video [jina]` | Kudownload video kutoka YouTube. |
+| `.sticker` | Kubadilisha picha kuwa sticker. |
+| `.group open/close` | Kufungua au kufunga group (Admin tu). |
+| `.hidetag` | Kutag members wote wa group bila wao kuona. |
+| `.kick / .add` | Kuondoa au kuongeza member (Admin tu). |
+
+---
+
+## ⚙️ Jinsi ya Kufanya Settings (Environment Variables)
+Ukiwa kwenye Heroku au Panel yoyote, hakikisha unaweka `Variables` hizi ili bot ifanye kazi vizuri:
+
+1. **`SESSION_ID`**: Weka ile ID uliyopata kutoka kwenye pairing site.
+2. **`OWNER_NUMBER`**: Namba yako ya simu (mfano: `2557XXXXXXXX`).
+3. **`PREFIX`**: Alama ya kuanzia commands (mfano: `.` au `!`).
+4. **`MODE`**: Weka `public` (kila mtu atumie) au `private` (wewe tu).
+5. **`ANTILINK`**: Weka `true` ili bot iondoe watu wanaotuma link za magroup mengine.
+
+---
+
+## 🛠️ Jinsi ya Kufanya Update
+Kama umefanya mabadiliko kwenye repository yako na unataka bot yako ipokee updates mpya:
+
+1. Nenda kwenye GitHub yako.
+2. Bonyeza kitufe cha **`Sync Fork`** (kama ulifork kutoka kwa mtu mwingine).
+3. Restart bot yako kwenye Panel (Heroku, Render, nk.).
+
+---
+
+## 🔥 Support & Community
+Usikae na tatizo peke yako! Jiunge na familia ya **TIMNASA-XMD**:
+
+* 🛡️ **Channel:** [Bofya Hapa Kupata Updates](https://whatsapp.com/channel/0029Vb6uo9yJ3juwi9GYgS47)
+* 💬 **Support Group:** [Bofya Hapa Kupata Msaada](https://chat.whatsapp.com/JazGLNBxW5XDVEst3PN4kj?mode=gi_t)
+
+---
+
+<p align="center">
+  <b>Imetengenezwa kwa ❤️ na TIMNASA-XMD Team</b>
+</p>
